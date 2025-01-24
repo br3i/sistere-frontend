@@ -1,0 +1,14 @@
+numpy==2.2.2 # type: ignore
+pandas==2.2.3 # type: ignore
+Pillow==10.4.0 # type: ignore
+bcrypt==4.2.0 # type: ignore
+PyMuPDF==1.25.2 # type: ignore
+pytz==2024.2 # type: ignore
+PyYAML==6.0.2 # type: ignore
+Requests==2.32.3 # type: ignore
+sib_api_v3_sdk==7.6.0 # type: ignore
+streamlit==1.41.1 # type: ignore
+streamlit_feedback==0.1.4 # type: ignore
+toml==0.10.2 # type: ignore
+websocket_client==1.8.0 # type: ignore
+
