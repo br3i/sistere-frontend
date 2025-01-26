@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import requests
 import uuid
+import time
 import pandas as pd
 from modules.documents.utils.str_time import convert_datetime, convert_to_string
 from modules.documents.utils.formatted_path import formatted_path
@@ -31,7 +32,7 @@ def show_df_documents():
         for document in documents:
             formatted_directory = formatted_path(document["path"])
             created_at_datetime = convert_datetime(document["created_at"])
-            document_url = f"{BACKEND_URL}/document/{document['name']}"
+            document_url = document["path"]
             documents_data.append(
                 {
                     "id": document["id"],

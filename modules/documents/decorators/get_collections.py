@@ -1,12 +1,18 @@
 import streamlit as st
-import requests
-import json
+from helpers.chroma_client import chroma_client
 
-BACKEND_URL = st.secrets.get("BACKEND_URL", "Not found")
 
 @st.cache_data(show_spinner=False, ttl=60)
 def get_collections():
-    response = requests.get(f"{BACKEND_URL}/collection_names")
-    if response.status_code == 200:
-        return response.json().get("collections", [])
-    return []
+    try:
+        client = chroma_client()
+        collections = client.list_collections()
+        print("[mensaje get_collections] collections:", collections)
+        print("[mensaje get_collections] type collections:", type(collections))
+
+        if collections is None:
+            return []
+        return collections
+    except Exception as e:
+        print(f"Error al obtener colecciones: {e}")
+        return []

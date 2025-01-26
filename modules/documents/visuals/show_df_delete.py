@@ -27,7 +27,7 @@ def show_df_delete():
         documents_data = []
         for document in documents:
             formatted_directory = formatted_path(document["path"])
-            document_url = f"{BACKEND_URL}/pdf/{document['name']}"
+            document_url = document["path"]
             documents_data.append(
                 {
                     "id": document["id"],

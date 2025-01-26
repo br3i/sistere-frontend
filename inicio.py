@@ -14,8 +14,6 @@ with col1:
 with col2:
     if st.button("🤖 Asistente", key="asistente", use_container_width=True):
         st.switch_page("pages/assistant.py")
-    # Añadir imágenes decorativas si es necesario
-    st.image("assets/hashcat.png")
 
 with col3:
     if st.button("📁 Administración", key="admin", use_container_width=True):

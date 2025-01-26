@@ -70,7 +70,7 @@ def show_upload_docs():
                     "Ingresa un nombre para una nueva colección"
                 )
             else:
-                collections.append("Crear Nueva")
+                collections.append("Crear Nueva")  # type: ignore
                 selected_option = st.selectbox("Selecciona una colección", collections)
                 if selected_option == "Crear Nueva":
                     collection_name = st.text_input(
