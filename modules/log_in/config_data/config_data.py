@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from modules.log_in.cache_data.load_data import load_users
 from modules.log_in.supabase_client import get_client_supabase
 
-TIME_ZONE = st.secrets.get("TIME_ZONE", "Not Found")
+TIME_ZONE = st.secrets.get("TIME_ZONE", "America/Guayaquil")
 
 tz = pytz.timezone(TIME_ZONE)
 

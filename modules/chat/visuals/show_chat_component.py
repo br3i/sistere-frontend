@@ -1,11 +1,9 @@
 import streamlit as st
-import io
-import json
-import urllib.parse
-import requests
-import websocket
-import base64
-from PIL import Image
+from modules.chat.utils.extract_page_image_from_memory import (
+    extract_page_image_from_memory,
+)
+from modules.chat.utils.extrac_relative_path import extract_relative_path
+from modules.log_in.supabase_client import get_client_supabase
 
 BACKEND_URL = st.secrets.get("BACKEND_URL", "Not Found")
 BACKEND_WS_URL = st.secrets.get("BACKEND_WS_URL", "Not Found")
@@ -62,62 +60,60 @@ def show_sources_via_ws(sources):
     if sources:
         with st.status("Obteniendo imágenes..."):
             try:
-                # Establecer conexión WebSocket
-                ws = websocket.create_connection(f"{BACKEND_WS_URL}/get_page_images")
-
-                # Enviar la lista de solicitudes
-                batch_request_data = [
-                    {
-                        "file_path": source.get("file_path", ""),
-                        "resolve_page": int(source.get("resolve_page", 1)),
-                    }
-                    for source in sources
-                ]
-
-                ws.send(json.dumps(batch_request_data))
-
-                # Recibir y mostrar imágenes progresivamente
-                for index in range(len(sources)):
+                for index, source in enumerate(sources):
                     print(
-                        f"Recibiendo mensaje del WebSocket... (Iteración {index + 1}/{len(sources)})"
+                        f"Recibiendo imagen... (Iteración {index + 1}/{len(sources)})"
                     )
-                    message = ws.recv()
-                    data = json.loads(message)
 
-                    # Verificar si hubo un error
-                    if "error" in data:
-                        print(f"Error en los datos recibidos: {data['error']}")
-                        st.error(f"Error: {data['error']}")
-                        continue
+                    file_path = extract_relative_path(source.get("file_path", ""))
+                    resolve_page = int(source.get("resolve_page", 1))
+                    print(f"[file_path] file_path: {file_path}")
 
-                    # Decodificar la imagen base64
-                    img_base64 = data.get("image", None)
-                    if img_base64:
-                        print("Imagen encontrada, decodificando...")
-                        img_bytes = base64.b64decode(img_base64)
-                        img = Image.open(io.BytesIO(img_bytes))
-                        document_name = data.get("document_name", "Desconocido")
-                        resolve_page = data.get("resolve_page", "Desconocido")
-
-                        st.markdown(
-                            f"- :violet[Documento]: {document_name} | :orange[Página]: {resolve_page}"
+                    # Obtener la URL para descargar el archivo desde Supabase
+                    try:
+                        client_supabase = get_client_supabase()
+                        file = client_supabase.storage.from_("documents").download(
+                            file_path
                         )
-                        cols = st.columns([0.1, 0.8, 0.1], gap="small")
-                        with cols[1]:
-                            st.image(
-                                img,
-                                caption=f"Página {resolve_page} del documento",
+                        # Reemplaza con tu URL de Supabase y la configuración de almacenamiento
+
+                        # Descargar el archivo desde Supabase
+                        if file:
+                            print("Archivo descargado con éxito.")
+                            extracted_image = extract_page_image_from_memory(
+                                file, resolve_page
+                            )
+
+                            # Mostrar la imagen en Streamlit
+                            document_name = source.get("file_path", "Desconocido")
+                            st.link_button(
+                                f":violet[Documento] | :orange[Página] {resolve_page}",
+                                source.get("file_path", ""),
+                                help="Haga clic para visualizar el archivo",
+                                icon=":material/public:",
                                 use_container_width=True,
                             )
-                    else:
-                        print(
-                            f"No se pudo cargar la imagen de la página {data.get('resolve_page', 'Desconocido')}"
-                        )
-                        st.error(
-                            f"No se pudo cargar la imagen de la página {data.get('resolve_page', 'Desconocido')} del documento."
-                        )
+                            cols = st.columns([0.1, 0.8, 0.1], gap="small")
+                            with cols[1]:
+                                if extracted_image is not None:
+                                    st.image(
+                                        extracted_image,
+                                        caption=f"Página {resolve_page} del documento",
+                                        use_container_width=True,
+                                    )
+                                else:
+                                    st.error(
+                                        "No se pudo extraer la imagen de la página."
+                                    )
+
+                        else:
+                            print(f"Error al descargar el archivo: {file}")
+                            st.error(f"No se pudo descargar el archivo: {file_path}")
+                    except Exception as e:
+                        print(f"Error durante la ejecución: {e}")
+                        st.error(f"Error al obtener el archivo de Supabase: {e}")
+
             except Exception as e:
                 print(f"Error durante la ejecución: {e}")
-                st.error(f"Error en la conexión WebSocket: {e}")
     else:
         st.info("No se encontraron fuentes relevantes.")
