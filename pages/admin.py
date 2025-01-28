@@ -44,10 +44,10 @@ else:
         print(f"[st.ss.username_logged] {st.session_state['username_logged']}")
         show_main_dashboard()
         create_menu(username_logged)
-        with placeholder:
-            st.status("Valores en st.session_state")
-            for key in st.session_state:
-                st.markdown(f"**Key**: `{key}`  \n**Value**: `{st.session_state[key]}`")
+        # with placeholder:
+        #     st.status("Valores en st.session_state")
+        #     for key in st.session_state:
+        #         st.markdown(f"**Key**: `{key}`  \n**Value**: `{st.session_state[key]}`")
     else:
         # Redirigir al login si no hay sesión activa
         st.info("Ingrese las credenciales para iniciar sesión.")

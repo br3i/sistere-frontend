@@ -40,8 +40,12 @@ if "username_logged" in st.session_state:
 else:
     print("[recargo la pagina]")
     username_logged = None
-    for username, user_data in config["credentials"]["usernames"].items():  # type: ignore
-        print(f"[ciclo for] username: {username} - user_data: {user_data}")
+    valid_usernames = {
+        username: user_data
+        for username, user_data in config["credentials"]["usernames"].items()  # type: ignore
+        if isinstance(user_data, dict)  # Asegurarse de que user_data sea un diccionario
+    }
+    for username, user_data in valid_usernames.items():  # type: ignore
         if user_data["logged_in"] and is_session_valid(username):
             print(f"[1 condicional]")
             username_logged = username

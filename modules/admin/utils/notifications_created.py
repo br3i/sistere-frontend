@@ -2,9 +2,10 @@ import streamlit as st
 import requests
 import json
 
-BACKEND_URL = st.secrets.get('BACKEND_URL', 'Not found')
+BACKEND_URL = st.secrets.get("BACKEND_URL", "Not found")
 
-@st.cache_data(show_spinner=False, ttl=60)
+
+@st.cache_data(show_spinner=False, ttl=300)
 def notifications_created():
     response = requests.get(f"{BACKEND_URL}/notifications")
     # Si la respuesta fue exitosa, devuelve los datos JSON de las notificaciones

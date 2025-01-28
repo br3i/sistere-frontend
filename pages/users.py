@@ -23,7 +23,12 @@ if "username_logged" in st.session_state:
     show_user_logged()
 else:
     username_logged = None
-    for username, user_data in config["credentials"]["usernames"].items():  # type: ignore
+    valid_usernames = {
+        username: user_data
+        for username, user_data in config["credentials"]["usernames"].items()  # type: ignore
+        if isinstance(user_data, dict)  # Asegurarse de que user_data sea un diccionario
+    }
+    for username, user_data in valid_usernames.items():  # type: ignore
         if user_data["logged_in"] and is_session_valid(username):
             username_logged = username
             break
