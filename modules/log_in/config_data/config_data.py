@@ -1,6 +1,5 @@
 import streamlit as st
 import io
-import time
 import yaml
 import pytz
 from datetime import datetime
