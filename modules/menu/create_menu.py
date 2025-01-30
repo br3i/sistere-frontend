@@ -1,7 +1,8 @@
 import streamlit as st
+import time
 from modules.log_in.cache_data.load_data import load_user
 from modules.settings.utils.load_theme_extra_config import load_theme_extra_config
-from modules.log_in.cookie.cookie_manager import get_cookie_controller
+from modules.log_in.local_storage.local_storage import getLocalS
 
 theme_extra_config = load_theme_extra_config()
 
@@ -47,8 +48,9 @@ def create_menu(username):
             btn_logout = st.button("Salir")
             if btn_logout:
                 st.session_state.clear()
-                controller = get_cookie_controller()
-                controller.remove("access_token")
+                localS = getLocalS()
+                localS.deleteItem("access_token")
+                time.sleep(0.2)
                 st.rerun()
 
         else:

@@ -1,9 +1,8 @@
 import streamlit as st
 import requests
-import time
 from modules.menu.create_menu import create_menu
 from modules.log_in.login import create_login
-from modules.log_in.cookie.cookie_manager import get_cookie_controller
+from modules.log_in.local_storage.local_storage import getLocalS
 
 BACKEND_URL = st.secrets.get("BACKEND_URL", "Not found")
 
@@ -11,17 +10,15 @@ BACKEND_URL = st.secrets.get("BACKEND_URL", "Not found")
 placeholder = st.empty()
 
 if "username_logged" not in st.session_state:
-    controller = get_cookie_controller()
+    localS = getLocalS()
+    access_token = localS.getItem("access_token")
 
-    token = controller.get("access_token")
-
-    time.sleep(0.2)
-    if token is None:
-        placeholder = create_login(controller)
+    if access_token is None:
+        placeholder = create_login(localS)
     else:
         try:
             response_validate = requests.get(
-                f"{BACKEND_URL}/validate_token", json={"token": token}
+                f"{BACKEND_URL}/validate_token", json={"token": access_token}
             )
 
             if response_validate.status_code == 200:
@@ -43,7 +40,8 @@ if "username_logged" not in st.session_state:
                         st.write(3)
 
             else:
-                placeholder = create_login(controller)
+                localS.eraseItem("access_token")
+                placeholder = create_login(localS)
         except Exception as e:
             print(f"[admin] Error validando el token: {e}")
 else:

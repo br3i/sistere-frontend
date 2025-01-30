@@ -1,12 +1,11 @@
 import streamlit as st
 import requests
-import time
 from modules.menu.create_menu import create_menu
 from modules.settings.utils.load_theme_config import load_theme_config
 from modules.settings.utils.load_theme_extra_config import load_theme_extra_config
 from modules.settings.visuals.change_theme_config import change_theme_config
 from modules.log_in.login import create_login
-from modules.log_in.cookie.cookie_manager import get_cookie_controller
+from modules.log_in.local_storage.local_storage import getLocalS
 
 BACKEND_URL = st.secrets.get("BACKEND_URL", "Not found")
 
@@ -33,17 +32,15 @@ def saved_changed_theme():
 
 
 if "username_logged" not in st.session_state:
-    controller = get_cookie_controller()
+    localS = getLocalS()
+    access_token = localS.getItem("access_token")
 
-    token = controller.get("access_token")
-
-    time.sleep(0.2)
-    if token is None:
-        placeholder = create_login(controller)
+    if access_token is None:
+        placeholder = create_login(localS)
     else:
         try:
             response_validate = requests.get(
-                f"{BACKEND_URL}/validate_token", json={"token": token}
+                f"{BACKEND_URL}/validate_token", json={"token": access_token}
             )
 
             if response_validate.status_code == 200 and theme_extra_config is not None:
@@ -54,7 +51,8 @@ if "username_logged" not in st.session_state:
                 with st.spinner("Cargando..."):
                     change_theme_config(theme_config, theme_extra_config)
             else:
-                placeholder = create_login(controller)
+                localS.eraseItem("access_token")
+                placeholder = create_login(localS)
         except Exception as e:
             print(f"[admin] Error validando el token: {e}")
 else:

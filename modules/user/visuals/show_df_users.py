@@ -7,7 +7,6 @@ import pandas as pd
 import time
 from modules.user.decorators.get_roles import get_roles
 from modules.user.utils.reset_df_user import reset_df_user
-from modules.log_in.config_data.config_data import update_users_in_yaml
 from modules.log_in.cache_data.load_data import load_users
 from helpers.show_toast import show_toast
 
@@ -300,7 +299,6 @@ def show_df_users():
                     placeholder_warning.empty()
                     placeholder_error.empty()
                     load_users.clear()
-                    update_users_in_yaml()
                     users = load_users()
                 else:
                     placeholder_warning.warning(

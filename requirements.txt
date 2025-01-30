@@ -10,7 +10,7 @@ Requests==2.32.3 # type: ignore
 sib_api_v3_sdk==7.6.0 # type: ignore
 streamlit==1.41.1 # type: ignore
 streamlit_feedback==0.1.4 # type: ignore
-streamlit-cookies-controller==0.0.4 #type: ignore
+streamlit-local-storage==0.025 #type: ignore
 supabase==2.12.0 # type: ignore
 toml==0.10.2 # type: ignore
 websocket_client==1.8.0 # type: ignore

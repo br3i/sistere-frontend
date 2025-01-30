@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import bcrypt
 import pytz
+import time
 from datetime import datetime
 from helpers.show_toast import show_toast
 from modules.admin.dialogs.forgot_password_dialog import forgot_password_dialog
@@ -36,7 +37,7 @@ def validate_user(username, password):
     return False
 
 
-def create_login(controller):
+def create_login(localS):
     if st.session_state.get("password_changed") is True:
         show_toast("¡Contraseña cambiada exitosamente!", icon="✔")
         st.session_state["password_changed"] = None
@@ -94,10 +95,11 @@ def create_login(controller):
                             },
                         )
                         if response_login.status_code == 200:
-                            controller.set(
+                            localS.setItem(
                                 "access_token",
                                 response_login.json().get("access_token"),
                             )
+                            time.sleep(0.3)
                             st.rerun()
                     except Exception as e:
                         print(f"[login] Error en login: {e}")
