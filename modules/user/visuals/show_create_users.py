@@ -2,7 +2,6 @@ import streamlit as st
 import uuid
 import pandas as pd
 from modules.user.visuals.show_form_register import show_form_register
-from modules.log_in.config_data.config_data import update_users_in_yaml
 from modules.log_in.cache_data.load_data import load_users
 
 
@@ -78,7 +77,6 @@ def show_create_users():
                         f"{message}: {username_new}", icon=":material/check:"
                     )
                     load_users.clear()
-                    update_users_in_yaml()
                     del st.session_state.users_df
                     del st.session_state.selected_user
                     del st.session_state.selected_roles

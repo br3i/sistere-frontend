@@ -3,14 +3,14 @@ import pandas as pd
 import requests
 import bcrypt
 import pytz
+import time
 from datetime import datetime
 from helpers.show_toast import show_toast
 from modules.admin.dialogs.forgot_password_dialog import forgot_password_dialog
 from modules.admin.dialogs.verify_code_dialog import verify_code_dialog
 from modules.admin.dialogs.new_password_dialog import new_password_dialog
 from modules.admin.dialogs.forgot_username_dialog import forgot_username_dialog
-from modules.log_in.cache_data.load_data import load_users, load_user
-from modules.log_in.config_data.config_data import load_config, save_config
+from modules.log_in.cache_data.load_data import load_user
 
 BACKEND_URL = st.secrets.get("BACKEND_URL", "Not Found")
 NOMBRE_ASISTENTE = st.secrets.get("NOMBRE_ASISTENTE", "Not Found")
@@ -37,7 +37,7 @@ def validate_user(username, password):
     return False
 
 
-def create_login():
+def create_login(localS):
     if st.session_state.get("password_changed") is True:
         show_toast("¡Contraseña cambiada exitosamente!", icon="✔")
         st.session_state["password_changed"] = None
@@ -86,19 +86,23 @@ def create_login():
                     st.session_state["username"] = username_input
                     st.session_state["username_logged"] = True
                     # Registrar el último login
-                    config = load_config()
-                    if config is not None:
-                        current_time = datetime.now(tz)
-                        config["credentials"]["usernames"][username_input][
-                            "logged_in"
-                        ] = True
-                        config["credentials"]["usernames"][username_input][
-                            "last_login"
-                        ] = current_time.isoformat()
-                        save_config(config)
-                        st.rerun()
-                    else:
-                        print(f"[login] Error, config es: {config}")
+                    try:
+                        response_login = requests.post(
+                            f"{BACKEND_URL}/login",
+                            json={
+                                "username": username_input,
+                                "password": password_input,
+                            },
+                        )
+                        if response_login.status_code == 200:
+                            localS.setItem(
+                                "access_token",
+                                response_login.json().get("access_token"),
+                            )
+                            time.sleep(0.3)
+                            st.rerun()
+                    except Exception as e:
+                        print(f"[login] Error en login: {e}")
                 else:
                     st.error("Usuario o clave inválidos", icon=":material/gpp_maybe:")
         col1, col2 = st.columns([1, 2], gap="small", vertical_alignment="center")

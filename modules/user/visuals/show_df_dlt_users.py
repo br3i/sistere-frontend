@@ -7,7 +7,6 @@ import pandas as pd
 import time
 from modules.user.decorators.get_roles import get_roles
 from modules.user.utils.reset_df_dlt_user import reset_df_dlt_user
-from modules.log_in.config_data.config_data import sync_deleted_users
 from modules.log_in.cache_data.load_data import load_users
 from helpers.show_toast import show_toast
 
@@ -113,7 +112,6 @@ def show_df_dlt_users():
                                 placeholder_success.success(
                                     f":material/check: Usuario '{users[row['index']]['username']}' eliminado correctamente!"
                                 )
-                                sync_deleted_users()
                             else:
                                 st.error(
                                     f":material/gpp_maybe: Error al eliminar el usuario '{users[row['index']]['username']}'."
