@@ -58,13 +58,15 @@ BACKEND_WS_URL = st.secrets.get("BACKEND_WS_URL", "Not Found")
 
 def show_sources_via_ws(sources):
     if sources:
-        with st.status("Obteniendo imágenes..."):
+        print(f"show_sources_visa_ws: sources {sources}")
+        with st.status("Obteniendo fuentes..."):
             try:
                 for index, source in enumerate(sources):
                     print(
                         f"Recibiendo imagen... (Iteración {index + 1}/{len(sources)})"
                     )
 
+                    document_name = source.get("document_name", "")
                     file_path = extract_relative_path(source.get("file_path", ""))
                     resolve_page = int(source.get("resolve_page", 1))
                     print(f"[file_path] file_path: {file_path}")
@@ -83,11 +85,8 @@ def show_sources_via_ws(sources):
                             extracted_image = extract_page_image_from_memory(
                                 file, resolve_page
                             )
-
-                            # Mostrar la imagen en Streamlit
-                            document_name = source.get("file_path", "Desconocido")
                             st.link_button(
-                                f":violet[Documento] | :orange[Página] {resolve_page}",
+                                f":violet[Documento] {document_name} | :orange[Página] {resolve_page}",
                                 source.get("file_path", ""),
                                 help="Haga clic para visualizar el archivo",
                                 icon=":material/public:",

@@ -30,7 +30,7 @@ def show_df_documents():
         # Convertir los documentos en un DataFrame para mostrarlos en una tabla editable
         documents_data = []
         for document in documents:
-            formatted_directory = formatted_path(document["path"])
+            formatted_directory = document["physical_path"]
             created_at_datetime = convert_datetime(document["created_at"])
             document_url = document["path"]
             documents_data.append(
@@ -90,10 +90,9 @@ def show_df_documents():
                         timezone=None,
                     ),
                     "location": st.column_config.TextColumn(
-                        "Ubicación del Archivo",
+                        "Ubicación Física",
                         width=None,
-                        disabled=True,
-                        required=True,
+                        disabled=False,
                         max_chars=100,
                     ),
                     "view": st.column_config.LinkColumn(
