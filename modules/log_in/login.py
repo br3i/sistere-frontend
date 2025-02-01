@@ -99,7 +99,7 @@ def create_login(localS):
                                 "access_token",
                                 response_login.json().get("access_token"),
                             )
-                            time.sleep(0.3)
+                            time.sleep(0.5)
                             st.rerun()
                     except Exception as e:
                         print(f"[login] Error en login: {e}")
