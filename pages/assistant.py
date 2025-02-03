@@ -7,10 +7,7 @@ from streamlit_feedback import streamlit_feedback
 from modules.chat.utils.message_generator import message_generator
 from modules.chat.utils.remove_words import remove_word
 from modules.chat.utils.treat_query import treat_query
-
-# from modules.chat.visuals.show_chat_component import model_selector, show_sources
-# from modules.chat.visuals.show_chat_component import show_sources
-from modules.chat.visuals.show_chat_component import show_sources_via_ws
+from modules.chat.visuals.show_chat_component import show_sources_via_ws, model_selector
 from modules.chat.utils.random_placeholder import get_placeholder_manager
 from modules.chat.visuals.show_messages import (
     handle_user_input,
@@ -37,6 +34,8 @@ st.title(
 
 if "user_session_uuid" not in st.session_state:
     st.session_state.user_session_uuid = str(uuid.uuid4())
+if "model_selected" not in st.session_state:
+    st.session_state.model_selected = MODEL_LLM_BASE
 if "random_placeholder_generated" not in st.session_state:
     random_placeholder = get_placeholder_manager()
     st.session_state.random_placeholder_generated = (
@@ -64,12 +63,8 @@ on_advance = st.toggle(
 )
 if on_advance:
     with st.sidebar:
-        on_llm = st.toggle(
-            "Seleccionar LLM", help=f"Modelo seleccionado: {MODEL_LLM_BASE}"
-        )
-        if on_llm:
-            #!!! Por desarrollar
-            st.write("En desarrollo")
+        model_selector()
+
         on_times = st.toggle(
             "Tiempos",
             help="Visualizar los tiempos que tomó la generación de la última respuesta",
@@ -186,7 +181,7 @@ try:
             json_data = {
                 "user_session_uuid": st.session_state.user_session_uuid,
                 "interaction_uuid": last_interaction_uuid,
-                "model_name": MODEL_LLM_BASE,
+                "model_name": st.session_state.model_selected,
                 "use_considerations": st.session_state.use_considerations,
                 "n_documents": st.session_state.n_documents,
                 "word_list": st.session_state.word_list,
@@ -257,7 +252,7 @@ if query:
                 message_data = {
                     "user_session_uuid": st.session_state.user_session_uuid,
                     "use_considerations": st.session_state.use_considerations,
-                    "model_name": MODEL_LLM_BASE,
+                    "model_name": st.session_state.model_selected,
                 }
                 # Enviar un mensaje inicial
                 ws.send(json.dumps(message_data))
