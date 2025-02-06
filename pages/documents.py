@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from helpers.access_token_verification import is_token_valid
 from modules.menu.create_menu import create_menu
 from modules.documents.visuals.show_upload_docs import show_upload_docs
 from modules.documents.visuals.show_df_documents import show_df_documents
@@ -22,17 +23,13 @@ if "username_logged" not in st.session_state:
     if access_token is None:
         placeholder = create_login(localS)
     else:
-        try:
-            response_validate = requests.get(
-                f"{BACKEND_URL}/validate_token", json={"token": access_token}
-            )
-
-            if response_validate.status_code == 200:
-                create_menu(response_validate.json().get("username"))
-                st.title(
-                    f'Página :{theme_extra_config["primary_docs_color"]}[Gestión de Archivos]'
-                )
-
+        token_validation = is_token_valid(access_token)
+        print(f"[token_validation] {token_validation}")
+        if token_validation is not None:
+            username, valid_token = token_validation
+            print(f"[valid_token] valid_token: {valid_token}")
+            if valid_token:
+                create_menu(username)
                 # Crear pestañas para las diferentes funcionalidades
                 tabs = st.tabs(
                     ["Subir Archivo", "Editar Archivos", "Eliminar Archivos"]
@@ -54,12 +51,45 @@ if "username_logged" not in st.session_state:
                     st.header(":red[Archivos Disponibles]")
                     with st.spinner("Cargando Archivos..."):
                         show_df_delete()
+        else:
+            try:
+                response_validate = requests.get(
+                    f"{BACKEND_URL}/validate_token", json={"token": access_token}
+                )
 
-            else:
-                localS.eraseItem("access_token")
-                placeholder = create_login(localS)
-        except Exception as e:
-            print(f"[admin] Error validando el token: {e}")
+                if response_validate.status_code == 200:
+                    create_menu(response_validate.json().get("username"))
+                    st.title(
+                        f'Página :{theme_extra_config["primary_docs_color"]}[Gestión de Archivos]'
+                    )
+
+                    # Crear pestañas para las diferentes funcionalidades
+                    tabs = st.tabs(
+                        ["Subir Archivo", "Editar Archivos", "Eliminar Archivos"]
+                    )
+
+                    with tabs[0]:
+                        st.header(
+                            f':{theme_extra_config["secondary_docs_color"]}[Subir un PDF]'
+                        )
+                        with st.spinner("Cargando..."):
+                            show_upload_docs()
+                    with tabs[1]:
+                        st.header(
+                            f':{theme_extra_config["secondary_docs_color"]}[Archivos Disponibles]'
+                        )
+                        with st.spinner("Cargando Archivos..."):
+                            show_df_documents()
+                    with tabs[2]:
+                        st.header(":red[Archivos Disponibles]")
+                        with st.spinner("Cargando Archivos..."):
+                            show_df_delete()
+
+                else:
+                    localS.eraseItem("access_token")
+                    placeholder = create_login(localS)
+            except Exception as e:
+                print(f"[admin] Error validando el token: {e}")
 else:
     create_menu(st.session_state.username)
     st.title(f'Página :{theme_extra_config["primary_docs_color"]}[Gestión de Archivos]')

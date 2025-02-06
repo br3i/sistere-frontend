@@ -34,9 +34,6 @@ def create_menu(username):
             st.page_link(
                 "pages/reports.py", label="Reportes", icon=":material/bar_chart:"
             )
-            st.page_link(
-                "pages/metrics.py", label="Métricas", icon=":material/timeline:"
-            )
             st.page_link("pages/users.py", label="Usuarios", icon=":material/group:")
             st.page_link(
                 "pages/audit.py", label="Auditoría", icon=":material/security:"
@@ -45,12 +42,11 @@ def create_menu(username):
                 "pages/settings.py", label="Configuración", icon=":material/settings:"
             )
             st.page_link("pages/help.py", label="Documentación", icon=":material/help:")
-            btn_logout = st.button("Salir")
-            if btn_logout:
-                st.session_state.clear()
+            if st.button("Salir"):
+                print("btn salir")
                 localS = getLocalS()
-                localS.deleteItem("access_token")
-                time.sleep(0.2)
+                localS.eraseItem("access_token")
+                st.session_state.clear()
                 st.rerun()
 
         else:

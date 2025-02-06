@@ -9,7 +9,12 @@ from modules.log_in.supabase_client import get_client_supabase
 def model_selector():
     model_selected = st.selectbox(
         "Modelo LLM",
-        ["granite3.1-moe:3b", "granite3.1-dense", "deepseek-v2:16b"],
+        [
+            "deepseek-r1:32b",
+            "gemma2:27b",
+            "granite3.1-dense",
+            "granite3.1-moe:3b",
+        ],
         help="Seleccione el modelo, están ordenados de menor a mayor capacidad",
         index=0,
     )

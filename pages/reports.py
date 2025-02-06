@@ -31,7 +31,8 @@ if "username_logged" not in st.session_state:
                     f"{BACKEND_URL}/validate_token", json={"token": access_token}
                 )
                 if response_validate.status_code == 200:
-                    st.write("Reutilizar la función principal de reports 1")
+                    create_menu("brei")
+                    show_dashboard_reports()
                 else:
                     localS.eraseItem("access_token")
                     placeholder = create_login(localS)
@@ -40,4 +41,5 @@ if "username_logged" not in st.session_state:
 else:
     create_menu(st.session_state.username)
     # Crear pestañas para las diferentes funcionalidades
-    st.write("Reutilizar la función principal de reports 2")
+    create_menu("brei")
+    show_dashboard_reports()
