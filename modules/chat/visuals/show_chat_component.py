@@ -11,6 +11,7 @@ def model_selector():
         "Modelo LLM",
         [
             "gemma2:27b",
+            "llama3.3",
             "deepseek-r1:32b",
             "granite3.1-dense",
             "granite3.1-moe:3b",
