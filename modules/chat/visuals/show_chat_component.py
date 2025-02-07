@@ -10,8 +10,8 @@ def model_selector():
     model_selected = st.selectbox(
         "Modelo LLM",
         [
-            "deepseek-r1:32b",
             "gemma2:27b",
+            "deepseek-r1:32b",
             "granite3.1-dense",
             "granite3.1-moe:3b",
         ],
