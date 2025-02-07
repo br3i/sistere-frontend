@@ -72,9 +72,9 @@ def is_token_valid(token: str):
         username = payload.get("sub")  # Obtener el nombre de usuario del payload
         return (username, True)  # Retornar el nombre de usuario y True
 
-    except jwt.ExpiredSignatureError:
-        # print("[is_token_valid] Token expirado")
+    except jwt.ExpiredSignatureError as e:
+        print(f"[is_token_valid] Token expirado {e}")
         return None  # Token expirado
-    except jwt.InvalidTokenError:
-        # print("[is_token_valid] Token inválido")
+    except jwt.InvalidTokenError as e:
+        print(f"[is_token_valid] Token inválido {e}")
         return None  # Token inválido

@@ -36,6 +36,10 @@ def show_upload_docs():
     )
 
     if uploaded_files:
+        placeholder_info.info(
+            f":material/info: Puedes subir hasta {MAX_FILES_UPLOAD} archivos cada vez | "
+            f":material/upload_file: {len(uploaded_files)} documento{'s' if len(uploaded_files) != 1 else ''} seleccionado{'s' if len(uploaded_files) != 1 else ''}"
+        )
         if len(uploaded_files) > MAX_FILES_UPLOAD:
             placeholder_error.error(
                 f":material/gpp_maybe: Solo puedes subir hasta {MAX_FILES_UPLOAD} archivos cada vez."
