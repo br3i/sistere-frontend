@@ -16,8 +16,8 @@ with col2:
         st.switch_page("pages/assistant.py")
 
 with col3:
-    if st.button("📁 Administración", key="admin", use_container_width=True):
-        st.switch_page("pages/admin.py")
+    if st.button("📁 Administración", key="dashboard", use_container_width=True):
+        st.switch_page("pages/dashboard.py")
 
 
 # O si quieres agregar algún mensaje adicional o información útil

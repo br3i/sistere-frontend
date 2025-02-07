@@ -1,8 +1,10 @@
 import streamlit as st
 import requests
+from helpers.show_toast import show_toast
 from helpers.access_token_verification import is_token_valid
 from modules.menu.create_menu import create_menu
 from modules.log_in.login import create_login
+from modules.log_in.cache_data.load_data import load_user
 from modules.log_in.local_storage.local_storage import getLocalS
 from modules.reports.visuals.show_dashboard_reports import show_dashboard_reports
 
@@ -23,8 +25,18 @@ if "username_logged" not in st.session_state:
             username, valid_token = token_validation
             print(f"[valid_token] valid_token: {valid_token}")
             if valid_token:
-                create_menu(username)
-                show_dashboard_reports()
+                user_data = load_user(username)
+                if user_data is not None:
+                    roles = user_data["roles"]
+                    if "admin" in roles or "user" in roles:
+                        create_menu(username)
+                        show_dashboard_reports()
+                else:
+                    show_toast(
+                        "No tiene rol para acceder a esta página",
+                        icon=":material/error:",
+                    )
+                    st.switch_page("pages/dashboard.py")
         else:
             try:
                 response_validate = requests.get(
@@ -40,6 +52,4 @@ if "username_logged" not in st.session_state:
                 print(f"[admin] Error validando el token: {e}")
 else:
     create_menu(st.session_state.username)
-    # Crear pestañas para las diferentes funcionalidades
-    create_menu("brei")
     show_dashboard_reports()

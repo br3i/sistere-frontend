@@ -8,7 +8,8 @@ from modules.documents.decorators.get_documents_from_db import get_len_documents
 MAX_NOTIFICATIONS_HEIGHT = st.secrets.get("MAX_NOTIFICATIONS_HEIGHT", 10)
 
 
-def show_main_dashboard():
+def show_main_dashboard(roles):
+    print(f"[show_main_dashboard] roles: {roles}")
     st.header(
         "Dashboard de :orange[Administración] :material/admin_panel_settings:",
         divider="orange",
@@ -16,33 +17,47 @@ def show_main_dashboard():
 
     # Mostrar el contenido que no depende de las métricas
     st.subheader("Accesos Rápidos")
-    cols = st.columns([0.25, 0.25, 0.25, 0.25], gap="small", vertical_alignment="top")
 
-    with cols[0]:
-        if st.button(
-            ":material/account_box: Perfil", key="btn_profile", use_container_width=True
-        ):
-            st.switch_page("pages/profile.py")
+    # Diccionario de accesos rápidos con íconos
+    ROLE_PERMISSIONS = {
+        "admin": {
+            "pages/profile.py": (":material/account_box:", "Perfil"),
+            "pages/users.py": (":material/group:", "Usuarios"),
+            "pages/documents.py": (":material/folder:", "Documentos"),
+            "pages/reports.py": (":material/bar_chart:", "Reportes"),
+        },
+        "user": {
+            "pages/profile.py": (":material/account_box:", "Perfil"),
+            "pages/documents.py": (":material/folder:", "Documentos"),
+            "pages/reports.py": (":material/bar_chart:", "Reportes"),
+        },
+        "viewer": {
+            "pages/profile.py": (":material/account_box:", "Perfil"),
+            "pages/settings.py": (":material/settings:", "Configuración"),
+            "pages/help.py": (":material/help:", "Documentación"),
+        },
+    }
 
-    with cols[1]:
-        if st.button(
-            ":material/group: Usuarios", key="btn_users", use_container_width=True
-        ):
-            st.switch_page("pages/users.py")
+    # Definir prioridad de roles
+    PRIORIDAD_ROLES = ["admin", "user", "viewer"]
 
-    with cols[2]:
-        if st.button(
-            ":material/folder: Documentos",
-            key="btn_documents",
-            use_container_width=True,
-        ):
-            st.switch_page("pages/documents.py")
+    # Obtener el rol más alto del usuario
+    roles_usuario = roles
+    rol_activo = next((r for r in PRIORIDAD_ROLES if r in roles_usuario), "viewer")
 
-    with cols[3]:
-        if st.button(
-            ":material/bar_chart: Reportes", key="btn_reports", use_container_width=True
-        ):
-            st.switch_page("pages/reports.py")
+    # Obtener accesos rápidos según el rol
+    accesos_rapidos = ROLE_PERMISSIONS[rol_activo]
+
+    # Crear columnas (máximo 4 por fila)
+    cols = st.columns([0.25] * min(4, len(accesos_rapidos)), gap="small")
+
+    # Iterar sobre accesos y colocarlos en las columnas
+    for i, (page, (icon, label)) in enumerate(accesos_rapidos.items()):
+        with cols[i % len(cols)]:  # Distribuir en las columnas de forma equitativa
+            if st.button(
+                f"{icon} {label}", key=f"btn_{label.lower()}", use_container_width=True
+            ):
+                st.switch_page(page)
 
     st.write("___")
 
@@ -51,9 +66,8 @@ def show_main_dashboard():
 
     notifications = notifications_created()
 
-    #!!!!!!!!!!!!!!!!!!!!!!!!!AGREGAR CONTROL DE ROLES!!!!!!!!!!!!!!!!!!!!!!!!!
     # Verificar los roles del usuario
-    user_roles = st.session_state.get("roles", ["admin"])
+    user_roles = roles
 
     # Mostrar las notificaciones si el usuario tiene roles
     if notifications:

@@ -27,14 +27,14 @@ def validate_user(username, password):
             hashed_password = response["password"]
 
             if bcrypt.checkpw(password.encode(), hashed_password.encode()):
-                return True
+                return True, response["roles"]
         else:
-            return False
+            return False, None
     except requests.exceptions.RequestException as e:
         print(f"Error al validar usuario: {e}")
-        return False
+        return False, None
 
-    return False
+    return False, None
 
 
 def create_login(localS):
@@ -82,9 +82,13 @@ def create_login(localS):
 
             # Validación de credenciales
             if btn_login:
-                if validate_user(username_input, password_input):
+                validate_user_bool, roles = validate_user(
+                    username_input, password_input
+                )
+                if validate_user_bool:
                     st.session_state["username"] = username_input
                     st.session_state["username_logged"] = True
+                    st.session_state["roles"] = roles
                     # Registrar el último login
                     try:
                         response_login = requests.post(
