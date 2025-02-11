@@ -5,16 +5,14 @@ import matplotlib.pyplot as plt
 from helpers.colors_reports import colors_allowed, get_opposite_bright_color
 from modules.reports.utils.get_users_reports import (
     get_role_distribution,
-    get_code_usage_by_role,
-    get_active_users_metrics,
+    get_active_users,
 )
 
 
 def fetch_user_data(n_users: int):
     return {
         "role_distribution": get_role_distribution(n_users),
-        "code_usage": get_code_usage_by_role(n_users),
-        "active_users": get_active_users_metrics(n_users),
+        "active_users": get_active_users(n_users),
     }
 
 
@@ -35,32 +33,30 @@ def display_role_distribution(data):
         st.warning("No hay datos de roles disponibles.")
 
 
-def display_code_usage(data):
-    if data:
-        st.subheader("Uso de Códigos por Rol")
-        df = pd.DataFrame(data)
-
-        # Calcular códigos por usuario
-        df["codes_per_user"] = df["code_count"] / df["user_count"]
-
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write("### Estadísticas por Rol")
-            st.dataframe(df.set_index("role"))
-        with col2:
-            st.write("### Códigos por Usuario")
-            st.bar_chart(df.set_index("role")["codes_per_user"])
-    else:
-        st.warning("No hay datos de uso de códigos.")
+import pandas as pd
+import streamlit as st
 
 
 def display_active_users(data):
     if data:
-        st.subheader("Usuarios Activos por Rol")
+        st.subheader("Usuarios Activos")
+
+        # Convertir los datos a un DataFrame
         df = pd.DataFrame(data)
 
-        # Gráfico de barras
-        st.bar_chart(df.set_index("role"))
+        # Asegurarnos de que 'created_at' sea del tipo datetime
+        df["created_at"] = pd.to_datetime(df["created_at"])
+
+        # Si quieres agrupar por fecha, podemos contar cuántos usuarios se crearon en cada fecha
+        df_count_by_date = (
+            df.groupby(df["created_at"].dt.date).size().reset_index(name="count")
+        )
+
+        # Mostrar la tabla de usuarios activos
+        st.dataframe(df, hide_index=True, use_container_width=True)
+
+        # Gráfico de barras por fecha de creación
+        st.bar_chart(df_count_by_date.set_index("created_at"))
     else:
         st.warning("No hay datos de usuarios activos.")
 
@@ -80,6 +76,5 @@ def show_users_reports():
         st.error("Error al cargar los datos de usuarios")
         return
 
-    display_code_usage(data["code_usage"])
     display_active_users(data["active_users"])
     display_role_distribution(data["role_distribution"])

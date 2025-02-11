@@ -8,6 +8,10 @@ from modules.log_in.cache_data.load_data import load_user
 from modules.log_in.local_storage.local_storage import getLocalS
 from modules.reports.visuals.show_dashboard_reports import show_dashboard_reports
 
+st.set_page_config(
+    layout="wide",
+)
+
 BACKEND_URL = st.secrets.get("BACKEND_URL", "Not found")
 
 # Crear el placeholder para mostrar mensajes de carga
