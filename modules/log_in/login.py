@@ -22,9 +22,17 @@ tz = pytz.timezone(TIME_ZONE)
 def validate_user(username, password):
     try:
         response = load_user(username)
+        print(f"[validate_user] response: {response}")
 
         if response:
-            hashed_password = response["password"]
+            hashed_password = response["password"].strip()  # Elimina espacios en blanco
+            print(f"[validate_user] Longitud del hash: {len(hashed_password)}")
+
+            print(f"[validate_user] hashed_password ({type(hashed_password)}): {hashed_password}")
+            print(f"[validate_user] password ({type(password)}): {password}")
+            
+            print(f"[validate_user] hashed_password {hashed_password}")
+            print(f"[validate_user] password.encode() {password.encode()}")
 
             if bcrypt.checkpw(password.encode(), hashed_password.encode()):
                 return True, response["roles"]

@@ -30,9 +30,6 @@ def create_menu(username):
                     "pages/documents.py": "Archivos",
                     "pages/reports.py": "Reportes",
                     "pages/users.py": "Usuarios",
-                    "pages/audit.py": "Auditoría",
-                    "pages/settings.py": "Configuración",
-                    "pages/help.py": "Documentación",
                 },
                 "user": {
                     "pages/dashboard.py": "Inicio",
@@ -40,15 +37,11 @@ def create_menu(username):
                     "pages/assistant.py": NOMBRE_ASISTENTE,
                     "pages/documents.py": "Archivos",
                     "pages/reports.py": "Reportes",
-                    "pages/settings.py": "Configuración",
-                    "pages/help.py": "Documentación",
                 },
                 "viewer": {
                     "pages/dashboard.py": "Inicio",
                     "pages/profile.py": "Perfil",
                     "pages/assistant.py": NOMBRE_ASISTENTE,
-                    "pages/settings.py": "Configuración",
-                    "pages/help.py": "Documentación",
                 },
             }
 
@@ -89,8 +82,5 @@ def get_icon(label):
         "Archivos": "folder_open",
         "Reportes": "bar_chart",
         "Usuarios": "group",
-        "Auditoría": "security",
-        "Configuración": "settings",
-        "Documentación": "help",
     }
     return icons.get(label, "pageview")
